@@ -1,10 +1,12 @@
+'use client'
 // Screen 1a — Tracking Home
-// Shows treatment progress, AR hero placeholder, timeline scrubber, stat cards.
+// Timeline scrubber "Today" dot is now a draggable handle (pointer events + setPointerCapture).
 
+import { useState, useRef } from 'react'
 import HatchedPlaceholder from '@/app/components/shared/HatchedPlaceholder'
 import { trackingData } from '@/lib/mockData'
 
-// ── Sub-components ────────────────────────────────────────────────────────────
+// ── Shared micro-components ───────────────────────────────────────────────────
 
 function ThreeDotMenu() {
   return (
@@ -42,26 +44,57 @@ function Pill({ children }: { children: React.ReactNode }) {
   )
 }
 
-// ── Timeline scrubber ─────────────────────────────────────────────────────────
+// ── Draggable timeline scrubber ───────────────────────────────────────────────
 
 function TimelineScrubber() {
+  // todayPct = how far along the track the "Today" handle sits (0 = Day 0, 100 = Forecast)
+  const [todayPct, setTodayPct]   = useState(50)
+  const [dragging, setDragging]   = useState(false)
+  const isDragging                = useRef(false)   // ref for sync reads inside handlers
+  const trackRef                  = useRef<HTMLDivElement>(null)
+
+  /** Convert a clientX pixel position into a clamped 0-100 percentage. */
+  const pctFromClientX = (clientX: number): number => {
+    if (!trackRef.current) return todayPct
+    const { left, width } = trackRef.current.getBoundingClientRect()
+    return Math.max(0, Math.min(100, ((clientX - left) / width) * 100))
+  }
+
   return (
     <div style={{ padding: '0 24px', marginTop: 20 }}>
-      {/* Track */}
-      <div style={{ position: 'relative', height: 4, background: '#E0E0E0', borderRadius: 2 }}>
-        {/* Filled portion up to "Today" dot */}
+      {/* ── Track ── */}
+      <div
+        ref={trackRef}
+        style={{
+          position: 'relative',
+          height: 4,
+          background: '#E0E0E0',
+          borderRadius: 2,
+          // Allow clicking anywhere on track to jump the handle
+          cursor: 'pointer',
+        }}
+        onClick={(e) => {
+          // Only move on direct track click, not when the click comes from the handle
+          if ((e.target as HTMLElement) === trackRef.current) {
+            setTodayPct(pctFromClientX(e.clientX))
+          }
+        }}
+      >
+        {/* Filled segment — left edge → Today handle */}
         <div
           style={{
             position: 'absolute',
             left: 0,
             top: 0,
             height: '100%',
-            width: '50%',
+            width: `${todayPct}%`,
             background: '#404040',
             borderRadius: 2,
+            pointerEvents: 'none',
           }}
         />
-        {/* Day 0 dot — left */}
+
+        {/* Day 0 dot (left, static, small) */}
         <div
           style={{
             position: 'absolute',
@@ -73,24 +106,50 @@ function TimelineScrubber() {
             borderRadius: '50%',
             background: '#999999',
             border: '2px solid #FFFFFF',
+            pointerEvents: 'none',
           }}
         />
-        {/* Today dot — center, large filled */}
+
+        {/* Today — draggable handle */}
         <div
           style={{
             position: 'absolute',
-            left: '50%',
+            left: `${todayPct}%`,
             top: '50%',
             transform: 'translate(-50%, -50%)',
-            width: 14,
-            height: 14,
+            width: 20,
+            height: 20,
             borderRadius: '50%',
             background: '#1A1A1A',
-            border: '2px solid #FFFFFF',
+            border: '3px solid #FFFFFF',
             boxShadow: '0 0 0 2px #1A1A1A',
+            cursor: dragging ? 'grabbing' : 'grab',
+            touchAction: 'none',     // prevent scroll hijack on mobile
+            userSelect: 'none',
+            zIndex: 2,
+          }}
+          onPointerDown={(e) => {
+            e.preventDefault()
+            e.currentTarget.setPointerCapture(e.pointerId)
+            isDragging.current = true
+            setDragging(true)
+          }}
+          onPointerMove={(e) => {
+            if (!isDragging.current) return
+            setTodayPct(pctFromClientX(e.clientX))
+          }}
+          onPointerUp={(e) => {
+            e.currentTarget.releasePointerCapture(e.pointerId)
+            isDragging.current = false
+            setDragging(false)
+          }}
+          onPointerCancel={() => {
+            isDragging.current = false
+            setDragging(false)
           }}
         />
-        {/* Forecast dot — right */}
+
+        {/* Forecast dot (right, static, small) */}
         <div
           style={{
             position: 'absolute',
@@ -102,11 +161,12 @@ function TimelineScrubber() {
             borderRadius: '50%',
             background: '#CCCCCC',
             border: '2px solid #FFFFFF',
+            pointerEvents: 'none',
           }}
         />
       </div>
 
-      {/* Labels */}
+      {/* ── Labels ── */}
       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8 }}>
         <span style={{ fontSize: 11, color: '#999999' }}>Day 0</span>
         <span style={{ fontSize: 11, color: '#1A1A1A', fontWeight: 600 }}>Today</span>
@@ -116,7 +176,7 @@ function TimelineScrubber() {
   )
 }
 
-// ── Stat cards row ────────────────────────────────────────────────────────────
+// ── Stat cards ────────────────────────────────────────────────────────────────
 
 function StatCard({
   label,
@@ -127,7 +187,7 @@ function StatCard({
   label: string
   bigNumber: string
   caption: string
-  progressBar?: number // 0–1
+  progressBar?: number
 }) {
   return (
     <div
@@ -197,7 +257,7 @@ export default function TrackingHome() {
         />
       </div>
 
-      {/* Timeline scrubber */}
+      {/* Draggable timeline */}
       <TimelineScrubber />
 
       {/* Stat cards */}

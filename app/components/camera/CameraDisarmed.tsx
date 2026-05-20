@@ -1,5 +1,5 @@
 // Screen 3a — Camera Disarmed (default state)
-// Tapping any chip arms the camera and transitions to 3b.
+// Tapping the toggle card OR any duration chip arms the camera → 3b.
 
 import HatchedPlaceholder from '@/app/components/shared/HatchedPlaceholder'
 
@@ -9,16 +9,10 @@ interface CameraDisarmedProps {
 
 const CHIPS = ['Arm for 15 min', 'Arm for 1 hour', 'Arm until I turn off'] as const
 
-// Pill toggle — OFF state visual
+// Pill toggle — OFF state (pure visual)
 function ToggleOff() {
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 12,
-      }}
-    >
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12, pointerEvents: 'none' }}>
       {/* Track */}
       <div
         style={{
@@ -30,7 +24,7 @@ function ToggleOff() {
           flexShrink: 0,
         }}
       >
-        {/* Thumb */}
+        {/* Thumb — left side = OFF */}
         <div
           style={{
             position: 'absolute',
@@ -67,14 +61,22 @@ export default function CameraDisarmed({ onArm }: CameraDisarmedProps) {
         />
       </div>
 
-      {/* Status card */}
+      {/* ── Status card — entire card is clickable to arm ── */}
       <div
+        role="button"
+        tabIndex={0}
+        aria-label="Arm camera"
+        onClick={() => onArm('toggle')}
+        onKeyDown={(e) => e.key === 'Enter' && onArm('toggle')}
         style={{
           margin: '16px 24px 0',
           background: '#F5F5F5',
           border: '1px solid #E0E0E0',
           borderRadius: 14,
           padding: '18px 20px',
+          cursor: 'pointer',
+          // Subtle press feedback via active pseudo-class is not possible inline;
+          // the cursor change gives sufficient affordance for a lo-fi prototype.
         }}
       >
         <ToggleOff />
@@ -85,14 +87,23 @@ export default function CameraDisarmed({ onArm }: CameraDisarmedProps) {
         <p style={{ fontSize: 13, color: '#666666', lineHeight: 1.55 }}>
           Arm the camera to capture hands-free.{' '}
           <strong style={{ color: '#1A1A1A', fontWeight: 600 }}>Triple-click your teeth</strong>{' '}
-          for a photo. <strong style={{ color: '#1A1A1A', fontWeight: 600 }}>Press and hold (bite 2s)</strong>{' '}
+          for a photo.{' '}
+          <strong style={{ color: '#1A1A1A', fontWeight: 600 }}>Press and hold (bite 2s)</strong>{' '}
           for video.
         </p>
       </div>
 
       {/* Duration chip row */}
       <div style={{ padding: '16px 24px 0' }}>
-        <div style={{ fontSize: 11, color: '#999999', fontWeight: 600, letterSpacing: '0.5px', marginBottom: 10 }}>
+        <div
+          style={{
+            fontSize: 11,
+            color: '#999999',
+            fontWeight: 600,
+            letterSpacing: '0.5px',
+            marginBottom: 10,
+          }}
+        >
           ARM FOR
         </div>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>

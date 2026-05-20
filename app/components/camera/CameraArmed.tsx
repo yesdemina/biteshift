@@ -1,5 +1,6 @@
 // Screen 3b — Camera Armed
-// "Disarm now" → 3a.  "View Drafts" → 3c.
+// Toggle card is clickable → disarms (same as "Disarm now" button).
+// "Disarm now" button also disarms.  "View Drafts" → 3c.
 
 import HatchedPlaceholder from '@/app/components/shared/HatchedPlaceholder'
 
@@ -8,10 +9,10 @@ interface CameraArmedProps {
   onViewDrafts: () => void
 }
 
-// Toggle — ON state
+// Toggle — ON state (pure visual)
 function ToggleOn() {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12, pointerEvents: 'none' }}>
       <div
         style={{
           width: 56,
@@ -22,6 +23,7 @@ function ToggleOn() {
           flexShrink: 0,
         }}
       >
+        {/* Thumb — right side = ON */}
         <div
           style={{
             position: 'absolute',
@@ -75,24 +77,27 @@ export default function CameraArmed({ onDisarm, onViewDrafts }: CameraArmedProps
 
       {/* Hero */}
       <div style={{ padding: '14px 24px 0' }}>
-        <HatchedPlaceholder
-          label="POV viewfinder — live"
-          height={185}
-        />
+        <HatchedPlaceholder label="POV viewfinder — live" height={185} />
       </div>
 
-      {/* Status card */}
+      {/* ── Status card — entire card clickable to disarm ── */}
       <div
+        role="button"
+        tabIndex={0}
+        aria-label="Disarm camera"
+        onClick={onDisarm}
+        onKeyDown={(e) => e.key === 'Enter' && onDisarm()}
         style={{
           margin: '14px 24px 0',
           background: '#F5F5F5',
           border: '1px solid #E0E0E0',
           borderRadius: 14,
           padding: '18px 20px',
+          cursor: 'pointer',
         }}
       >
         <ToggleOn />
-        <p style={{ fontSize: 12, color: '#999999', marginTop: 10 }}>
+        <p style={{ fontSize: 12, color: '#999999', marginTop: 10, pointerEvents: 'none' }}>
           Auto-off in{' '}
           <span style={{ fontWeight: 600, color: '#666666', fontVariantNumeric: 'tabular-nums' }}>
             58:42
@@ -102,7 +107,15 @@ export default function CameraArmed({ onDisarm, onViewDrafts }: CameraArmedProps
 
       {/* Mechanics */}
       <div style={{ padding: '14px 24px 0' }}>
-        <div style={{ fontSize: 11, color: '#999999', fontWeight: 600, letterSpacing: '0.5px', marginBottom: 4 }}>
+        <div
+          style={{
+            fontSize: 11,
+            color: '#999999',
+            fontWeight: 600,
+            letterSpacing: '0.5px',
+            marginBottom: 4,
+          }}
+        >
           HOW IT WORKS
         </div>
         <div style={{ borderTop: '1px solid #E0E0E0' }}>
@@ -135,7 +148,7 @@ export default function CameraArmed({ onDisarm, onViewDrafts }: CameraArmedProps
         Captures go to Drafts for you to review before saving or sharing.
       </p>
 
-      {/* Disarm */}
+      {/* Action buttons */}
       <div style={{ padding: '18px 24px 0' }}>
         <button
           onClick={onDisarm}

@@ -1,26 +1,36 @@
 // Screen 4a — Support Home
+// Headline personalised to "hi, {name}" (falls back to "hi there").
+// Subtitle "Gentle reminders, no pressure" removed per spec.
 
 import { reminderCards, supplies } from '@/lib/mockData'
+
+interface SupportHomeProps {
+  userName: string
+}
 
 function ChevronRight() {
   return (
     <svg width="8" height="13" viewBox="0 0 8 13" fill="none">
-      <path d="M1.5 1.5L6.5 6.5L1.5 11.5" stroke="#AAAAAA" strokeWidth="1.7" strokeLinecap="round" />
+      <path
+        d="M1.5 1.5L6.5 6.5L1.5 11.5"
+        stroke="#AAAAAA"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+      />
     </svg>
   )
 }
 
-export default function SupportHome() {
+export default function SupportHome({ userName }: SupportHomeProps) {
+  const greeting = userName.trim() ? `hi, ${userName.trim()}` : 'hi there'
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', paddingBottom: 24 }}>
-      {/* Headline */}
+      {/* Personalised headline — subtitle removed */}
       <div style={{ padding: '16px 24px 0' }}>
-        <h1 style={{ fontSize: 26, fontWeight: 700, color: '#1A1A1A' }}>
-          We&apos;ve got you
+        <h1 style={{ fontSize: 26, fontWeight: 700, color: '#1A1A1A', letterSpacing: '-0.5px' }}>
+          {greeting}
         </h1>
-        <p style={{ fontSize: 14, color: '#999999', marginTop: 4 }}>
-          Gentle reminders, no pressure
-        </p>
       </div>
 
       {/* Reminder cards */}
