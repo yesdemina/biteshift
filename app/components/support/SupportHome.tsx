@@ -5,7 +5,8 @@
 import { reminderCards, supplies } from '@/lib/mockData'
 
 interface SupportHomeProps {
-  userName: string
+  userName:  string
+  onProfile: () => void
 }
 
 function ChevronRight() {
@@ -21,16 +22,39 @@ function ChevronRight() {
   )
 }
 
-export default function SupportHome({ userName }: SupportHomeProps) {
+export default function SupportHome({ userName, onProfile }: SupportHomeProps) {
   const greeting = userName.trim() ? `hi, ${userName.trim()}` : 'hi there'
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', paddingBottom: 24 }}>
-      {/* Personalised headline — subtitle removed */}
-      <div style={{ padding: '16px 24px 0' }}>
-        <h1 style={{ fontSize: 26, fontWeight: 700, color: '#1A1A1A', letterSpacing: '-0.5px' }}>
+      {/* Personalised headline + profile icon */}
+      <div
+        style={{
+          display:        'flex',
+          alignItems:     'center',
+          justifyContent: 'space-between',
+          padding:        '16px 24px 0',
+        }}
+      >
+        <h1 style={{ fontSize: 26, fontWeight: 700, color: '#1A1A1A', letterSpacing: '-0.5px', margin: 0 }}>
           {greeting}
         </h1>
+        <button
+          onClick={onProfile}
+          aria-label="Profile"
+          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, flexShrink: 0 }}
+        >
+          {/* Person silhouette — matches tab bar line weight */}
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="8" r="4" stroke="#1A1A1A" strokeWidth="1.6" />
+            <path
+              d="M4 20c0-4 3.582-7 8-7s8 3 8 7"
+              stroke="#1A1A1A"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+            />
+          </svg>
+        </button>
       </div>
 
       {/* Reminder cards */}

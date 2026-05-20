@@ -16,6 +16,7 @@
  */
 
 import { useState, useEffect } from 'react'
+import type { ScanHistoryEntry } from '@/lib/mockData'
 
 // ── Shared ─────────────────────────────────────────────────────────────────────
 import PhoneFrame        from '@/app/components/shared/PhoneFrame'
@@ -33,10 +34,12 @@ import CalibrationModal  from '@/app/components/tracking/CalibrationModal'
 import FaceScanProgress  from '@/app/components/tracking/FaceScanProgress'
 
 // ── Hygiene (tab 2) ────────────────────────────────────────────────────────────
-import HygieneHome    from '@/app/components/hygiene/HygieneHome'
-import ActiveScanning from '@/app/components/hygiene/ActiveScanning'
-import ScanResult     from '@/app/components/hygiene/ScanResult'
-import ToothDetail    from '@/app/components/hygiene/ToothDetail'
+import HygieneHome          from '@/app/components/hygiene/HygieneHome'
+import ActiveScanning       from '@/app/components/hygiene/ActiveScanning'
+import ScanResult           from '@/app/components/hygiene/ScanResult'
+import ToothDetail          from '@/app/components/hygiene/ToothDetail'
+import ScanHistory          from '@/app/components/hygiene/ScanHistory'
+import HistoricalScanDetail from '@/app/components/hygiene/HistoricalScanDetail'
 
 // ── Camera (tab 3) ─────────────────────────────────────────────────────────────
 import CameraDisarmed from '@/app/components/camera/CameraDisarmed'
@@ -44,13 +47,17 @@ import CameraArmed    from '@/app/components/camera/CameraArmed'
 import Drafts         from '@/app/components/camera/Drafts'
 
 // ── Support (tab 4) ────────────────────────────────────────────────────────────
-import SupportHome from '@/app/components/support/SupportHome'
+import SupportHome          from '@/app/components/support/SupportHome'
+import ProfileScreen        from '@/app/components/support/ProfileScreen'
+import ChangePasswordScreen from '@/app/components/support/ChangePasswordScreen'
+import TbdScreen            from '@/app/components/support/TbdScreen'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
 type AppScreen  = 'splash' | 'onboarding' | 'welcome' | 'main'
-type HygieneSub = 'home' | 'scanning' | 'result' | 'detail'
+type HygieneSub = 'home' | 'scanning' | 'result' | 'detail' | 'history' | 'historyDetail'
 type CameraSub  = 'disarmed' | 'armed' | 'drafts'
+type SupportSub = 'home' | 'profile' | 'changePassword' | 'tbd'
 
 // ── Root component ─────────────────────────────────────────────────────────────
 
@@ -69,6 +76,16 @@ export default function Home() {
   const [showCalibration,    setShowCalibration]    = useState(false)
   const [hasSeenCalibration, setHasSeenCalibration] = useState(false)
   const [showFaceScan,       setShowFaceScan]       = useState(false)
+
+  // ── Drafts ─────────────────────────────────────────────────────────────────
+  const [draftsCount, setDraftsCount] = useState(6)
+
+  // ── Scan history ────────────────────────────────────────────────────────────
+  const [selectedScan, setSelectedScan] = useState<ScanHistoryEntry | null>(null)
+
+  // ── Support sub-navigation ───────────────────────────────────────────────────
+  const [supportSub, setSupportSub] = useState<SupportSub>('home')
+  const [tbdTitle,   setTbdTitle]   = useState('')
 
   // ── Calibration modal: fires once, 3 s after entering main Tracking tab ───
   useEffect(() => {
@@ -105,6 +122,23 @@ export default function Home() {
     setActiveTab(tab)
     if (tab === 'hygiene') setHygieneSub('home')
     if (tab === 'camera')  setCameraSub(cameraArmed ? 'armed' : 'disarmed')
+    if (tab === 'support') setSupportSub('home')
+  }
+
+  // ── Sign out — resets all session state → Splash ───────────────────────────
+  const handleSignOut = () => {
+    setUserName('')
+    setHasSeenCalibration(false)
+    setCameraArmed(false)
+    setCameraSub('disarmed')
+    setActiveTab('tracking')
+    setHygieneSub('home')
+    setSupportSub('home')
+    setShowCalibration(false)
+    setShowFaceScan(false)
+    setSelectedScan(null)
+    setDraftsCount(6)
+    setAppScreen('splash')
   }
 
   // ── Face scan handlers ─────────────────────────────────────────────────────
@@ -128,10 +162,11 @@ export default function Home() {
     setCameraSub('disarmed')
   }
 
-  // ── Tab bar: hidden during active scan and face scan overlay ───────────────
+  // ── Tab bar: hidden during active scan, face scan overlay, change password ──
   const showTabBar =
     appScreen === 'main' &&
-    !(activeTab === 'hygiene' && hygieneSub === 'scanning')
+    !(activeTab === 'hygiene' && hygieneSub === 'scanning') &&
+    !(activeTab === 'support' && supportSub === 'changePassword')
 
   // ── Main screen content ────────────────────────────────────────────────────
   const renderContent = () => {
@@ -142,7 +177,12 @@ export default function Home() {
 
     // Tab 2 — Hygiene
     if (activeTab === 'hygiene') {
-      if (hygieneSub === 'home')     return <HygieneHome onStartScan={() => setHygieneSub('scanning')} />
+      if (hygieneSub === 'home')     return (
+        <HygieneHome
+          onStartScan={() => setHygieneSub('scanning')}
+          onViewHistory={() => setHygieneSub('history')}
+        />
+      )
       if (hygieneSub === 'scanning') return (
         <ActiveScanning
           onClose={() => setHygieneSub('home')}
@@ -156,6 +196,18 @@ export default function Home() {
         />
       )
       if (hygieneSub === 'detail')   return <ToothDetail onBack={() => setHygieneSub('result')} />
+      if (hygieneSub === 'history')  return (
+        <ScanHistory
+          onBack={() => setHygieneSub('home')}
+          onSelectScan={(scan) => { setSelectedScan(scan); setHygieneSub('historyDetail') }}
+        />
+      )
+      if (hygieneSub === 'historyDetail' && selectedScan) return (
+        <HistoricalScanDetail
+          scan={selectedScan}
+          onBack={() => setHygieneSub('history')}
+        />
+      )
     }
 
     // Tab 3 — Camera
@@ -167,12 +219,38 @@ export default function Home() {
           onViewDrafts={() => setCameraSub('drafts')}
         />
       )
-      if (cameraSub === 'drafts')   return <Drafts onBack={() => setCameraSub('armed')} />
+      if (cameraSub === 'drafts')   return (
+        <Drafts
+          onBack={() => setCameraSub('armed')}
+          draftsCount={draftsCount}
+          onClearAll={() => setDraftsCount(0)}
+        />
+      )
     }
 
     // Tab 4 — Support
     if (activeTab === 'support') {
-      return <SupportHome userName={userName} />
+      if (supportSub === 'home') return (
+        <SupportHome
+          userName={userName}
+          onProfile={() => setSupportSub('profile')}
+        />
+      )
+      if (supportSub === 'profile') return (
+        <ProfileScreen
+          userName={userName}
+          onBack={() => setSupportSub('home')}
+          onChangePassword={() => setSupportSub('changePassword')}
+          onTbd={(title) => { setTbdTitle(title); setSupportSub('tbd') }}
+          onSignOut={handleSignOut}
+        />
+      )
+      if (supportSub === 'changePassword') return (
+        <ChangePasswordScreen onBack={() => setSupportSub('profile')} />
+      )
+      if (supportSub === 'tbd') return (
+        <TbdScreen title={tbdTitle} onBack={() => setSupportSub('profile')} />
+      )
     }
 
     return null

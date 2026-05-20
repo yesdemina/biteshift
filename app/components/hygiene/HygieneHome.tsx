@@ -4,7 +4,8 @@ import HatchedPlaceholder from '@/app/components/shared/HatchedPlaceholder'
 import { hygieneData } from '@/lib/mockData'
 
 interface HygieneHomeProps {
-  onStartScan: () => void
+  onStartScan:   () => void
+  onViewHistory: () => void
 }
 
 function Pill({ children }: { children: React.ReactNode }) {
@@ -25,21 +26,6 @@ function Pill({ children }: { children: React.ReactNode }) {
     >
       {children}
     </div>
-  )
-}
-
-function ThreeDotMenu() {
-  return (
-    <button
-      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}
-      aria-label="More options"
-    >
-      <svg width="4" height="18" viewBox="0 0 4 18" fill="#999999">
-        <circle cx="2" cy="2"  r="1.8" />
-        <circle cx="2" cy="9"  r="1.8" />
-        <circle cx="2" cy="16" r="1.8" />
-      </svg>
-    </button>
   )
 }
 
@@ -80,18 +66,11 @@ function StatStrip() {
   )
 }
 
-export default function HygieneHome({ onStartScan }: HygieneHomeProps) {
+export default function HygieneHome({ onStartScan, onViewHistory }: HygieneHomeProps) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', paddingBottom: 24 }}>
       {/* Top row */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '16px 24px 0',
-        }}
-      >
+      <div style={{ padding: '16px 24px 0' }}>
         <Pill>
           <span
             style={{
@@ -104,7 +83,6 @@ export default function HygieneHome({ onStartScan }: HygieneHomeProps) {
           />
           Last scan · {hygieneData.lastScanDaysAgo} days ago
         </Pill>
-        <ThreeDotMenu />
       </div>
 
       {/* Headline */}
@@ -150,6 +128,7 @@ export default function HygieneHome({ onStartScan }: HygieneHomeProps) {
       {/* View history */}
       <div style={{ padding: '14px 24px 0', textAlign: 'center' }}>
         <button
+          onClick={onViewHistory}
           style={{
             background: 'none',
             border: 'none',

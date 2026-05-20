@@ -46,6 +46,21 @@ export default function OnboardingScreen({ onSubmit }: OnboardingScreenProps) {
         zIndex: 100,
       }}
     >
+      {/* Wordmark — pinned near top */}
+      <span
+        style={{
+          position: 'absolute',
+          top: 52,
+          fontSize: 14,
+          fontWeight: 400,
+          color: '#666666',
+          fontFamily: 'inherit',
+          userSelect: 'none',
+        }}
+      >
+        biteshift
+      </span>
+
       {/* Headline */}
       <h1
         style={{

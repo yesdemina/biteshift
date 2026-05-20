@@ -8,21 +8,6 @@ import { trackingData } from '@/lib/mockData'
 
 // ── Shared micro-components ───────────────────────────────────────────────────
 
-function ThreeDotMenu() {
-  return (
-    <button
-      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}
-      aria-label="More options"
-    >
-      <svg width="4" height="18" viewBox="0 0 4 18" fill="#999999">
-        <circle cx="2" cy="2"  r="1.8" />
-        <circle cx="2" cy="9"  r="1.8" />
-        <circle cx="2" cy="16" r="1.8" />
-      </svg>
-    </button>
-  )
-}
-
 function Pill({ children }: { children: React.ReactNode }) {
   return (
     <div
@@ -127,6 +112,7 @@ function TimelineScrubber() {
             touchAction: 'none',     // prevent scroll hijack on mobile
             userSelect: 'none',
             zIndex: 2,
+            transition: dragging ? 'none' : 'left 0.3s ease',
           }}
           onPointerDown={(e) => {
             e.preventDefault()
@@ -169,7 +155,13 @@ function TimelineScrubber() {
       {/* ── Labels ── */}
       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8 }}>
         <span style={{ fontSize: 11, color: '#999999' }}>Day 0</span>
-        <span style={{ fontSize: 11, color: '#1A1A1A', fontWeight: 600 }}>Today</span>
+        <span
+          onClick={() => setTodayPct(50)}
+          style={{ fontSize: 11, color: '#1A1A1A', fontWeight: 600, cursor: 'pointer', userSelect: 'none' }}
+          title="Tap to reset to today"
+        >
+          Today
+        </span>
         <span style={{ fontSize: 11, color: '#999999' }}>Forecast</span>
       </div>
     </div>
@@ -230,16 +222,8 @@ export default function TrackingHome() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', paddingBottom: 24 }}>
       {/* Top row */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '16px 24px 0',
-        }}
-      >
+      <div style={{ padding: '16px 24px 0' }}>
         <Pill>Day {trackingData.dayOfTreatment} of treatment</Pill>
-        <ThreeDotMenu />
       </div>
 
       {/* Headline */}

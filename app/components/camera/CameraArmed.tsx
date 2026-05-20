@@ -143,8 +143,14 @@ export default function CameraArmed({ onDisarm, onViewDrafts }: CameraArmedProps
         </div>
       </div>
 
+      {/* Captures counter */}
+      <p style={{ fontSize: 12, color: '#999999', padding: '10px 24px 0' }}>
+        captures in drafts:{' '}
+        <span style={{ fontWeight: 600, color: '#666666', fontVariantNumeric: 'tabular-nums' }}>0</span>
+      </p>
+
       {/* Note */}
-      <p style={{ fontSize: 12, color: '#AAAAAA', padding: '8px 24px 0', lineHeight: 1.4 }}>
+      <p style={{ fontSize: 12, color: '#AAAAAA', padding: '6px 24px 0', lineHeight: 1.4 }}>
         Captures go to Drafts for you to review before saving or sharing.
       </p>
 

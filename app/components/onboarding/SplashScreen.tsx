@@ -28,19 +28,33 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
         zIndex: 100,
       }}
     >
-      <span
-        style={{
-          fontSize: 48,
-          fontWeight: 700,
-          color: '#1A1A1A',
-          letterSpacing: '-2.5px',
-          fontFamily:
-            "-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif",
-          userSelect: 'none',
-        }}
-      >
-        shift happens
-      </span>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24 }}>
+        <span
+          style={{
+            fontSize: 28,
+            fontWeight: 400,
+            color: '#1A1A1A',
+            fontFamily:
+              "-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif",
+            userSelect: 'none',
+          }}
+        >
+          biteshift
+        </span>
+        <span
+          style={{
+            fontSize: 48,
+            fontWeight: 700,
+            color: '#1A1A1A',
+            letterSpacing: '-2.5px',
+            fontFamily:
+              "-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif",
+            userSelect: 'none',
+          }}
+        >
+          shift happens
+        </span>
+      </div>
     </div>
   )
 }

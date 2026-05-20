@@ -97,16 +97,7 @@ export default function ToothDetail({ onBack }: ToothDetailProps) {
         >
           {toothData.pill}
         </div>
-        <button
-          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}
-          aria-label="More options"
-        >
-          <svg width="4" height="18" viewBox="0 0 4 18" fill="#999999">
-            <circle cx="2" cy="2"  r="1.8" />
-            <circle cx="2" cy="9"  r="1.8" />
-            <circle cx="2" cy="16" r="1.8" />
-          </svg>
-        </button>
+        <div style={{ width: 28 }} />
       </div>
 
       {/* Headline */}

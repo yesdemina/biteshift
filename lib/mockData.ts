@@ -31,6 +31,33 @@ export const toothData = {
   fix: 'Use interdental brush, 2x daily for 1 week',
 }
 
+// Tab 2 — Scan History (Screen 2e / 2f)
+export type DotType = 'filled' | 'half' | 'outline'
+
+export interface ScanHistoryEntry {
+  id:      number
+  date:    string   // human-readable relative label
+  stats:   string   // full inline stats string
+  dotType: DotType
+  clean:   number
+  total:   number
+  plaque:  number
+  gumCare: number
+}
+
+export const scanHistory: ScanHistoryEntry[] = [
+  { id: 0, date: 'Today',        stats: '11/14 clean · 2 plaque · 1 gum care', dotType: 'half',    clean: 11, total: 14, plaque: 2, gumCare: 1 },
+  { id: 1, date: '6 days ago',   stats: '12/14 clean · 1 plaque · 1 gum care', dotType: 'half',    clean: 12, total: 14, plaque: 1, gumCare: 1 },
+  { id: 2, date: '2 weeks ago',  stats: '10/14 clean · 3 plaque · 1 gum care', dotType: 'outline', clean: 10, total: 14, plaque: 3, gumCare: 1 },
+  { id: 3, date: '3 weeks ago',  stats: '11/14 clean · 2 plaque · 1 gum care', dotType: 'half',    clean: 11, total: 14, plaque: 2, gumCare: 1 },
+  { id: 4, date: '1 month ago',  stats: '13/14 clean · 1 plaque · 0 gum care', dotType: 'filled',  clean: 13, total: 14, plaque: 1, gumCare: 0 },
+  { id: 5, date: '5 weeks ago',  stats: '12/14 clean · 2 plaque · 0 gum care', dotType: 'half',    clean: 12, total: 14, plaque: 2, gumCare: 0 },
+  { id: 6, date: '6 weeks ago',  stats: '10/14 clean · 3 plaque · 1 gum care', dotType: 'outline', clean: 10, total: 14, plaque: 3, gumCare: 1 },
+  { id: 7, date: '2 months ago', stats: '9/14 clean · 4 plaque · 1 gum care',  dotType: 'outline', clean:  9, total: 14, plaque: 4, gumCare: 1 },
+  { id: 8, date: '10 weeks ago', stats: '11/14 clean · 2 plaque · 1 gum care', dotType: 'half',    clean: 11, total: 14, plaque: 2, gumCare: 1 },
+  { id: 9, date: '3 months ago', stats: '10/14 clean · 3 plaque · 1 gum care', dotType: 'outline', clean: 10, total: 14, plaque: 3, gumCare: 1 },
+]
+
 // Tab 3 — Camera Drafts
 export interface Draft {
   id: number
